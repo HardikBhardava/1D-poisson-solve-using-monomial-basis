@@ -44,7 +44,7 @@ def lhs(m):
 
     return stiff_matrix_A
 
-m =7
+m =3
 def full_stiff_matrix(m):
     stiff_matrix_A = lhs(m)
     full_matrix = np.vstack(( np.zeros((m+1)), stiff_matrix_A, np.ones(m+1)) )
@@ -52,4 +52,19 @@ def full_stiff_matrix(m):
     return full_matrix
 
 full_matrix = full_stiff_matrix(m)
-print(full_matrix)
+
+def rhs(m):
+    f_v = np.zeros((m+1))
+
+    for i in range(1,m):
+        rhs_integration = lambda x : f(x)* x**(i)*(1-x)
+        f_v[i], _ = quad(rhs_integration, 0,1)
+
+    return f_v
+
+f_v = rhs(m)
+y_coeff = np.linalg.solve(full_matrix, f_v)
+print(y_coeff)
+
+
+
