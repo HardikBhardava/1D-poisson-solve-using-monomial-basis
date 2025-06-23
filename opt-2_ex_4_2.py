@@ -44,3 +44,12 @@ def lhs(m):
 
     return stiff_matrix_A
 
+m =7
+def full_stiff_matrix(m):
+    stiff_matrix_A = lhs(m)
+    full_matrix = np.vstack(( np.zeros((m+1)), stiff_matrix_A, np.ones(m+1)) )
+    full_matrix[0,0] = 1
+    return full_matrix
+
+full_matrix = full_stiff_matrix(m)
+print(full_matrix)
