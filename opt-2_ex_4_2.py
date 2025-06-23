@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import quad
 
-
+m = [1,2,3,4,9,19]
 def f(x):
     return 12*x**2 - 6*x
 
@@ -44,14 +44,14 @@ def lhs(m):
 
     return stiff_matrix_A
 
-m =3
+
 def full_stiff_matrix(m):
     stiff_matrix_A = lhs(m)
     full_matrix = np.vstack(( np.zeros((m+1)), stiff_matrix_A, np.ones(m+1)) )
     full_matrix[0,0] = 1
     return full_matrix
 
-full_matrix = full_stiff_matrix(m)
+#full_matrix = full_stiff_matrix(m)
 
 def rhs(m):
     f_v = np.zeros((m+1))
@@ -62,9 +62,29 @@ def rhs(m):
 
     return f_v
 
-f_v = rhs(m)
-y_coeff = np.linalg.solve(full_matrix, f_v)
-print(y_coeff)
+#f_v = rhs(m)
+#y_coeff = np.linalg.solve(full_matrix, f_v)
 
 
+def y_approx(x,y):
+    return sum(y[i]*x**[i] for i in range(len(y)))
 
+x_val = np.linspace(0,1,500)
+
+for i in m:
+    full_matrix = full_stiff_matrix(i)
+    f_v = rhs(i)
+    y_coeff = np.linalg.solve(full_matrix, f_v)
+    y_h = [y_approx(x, y_coeff) for x in x_val]
+    plt.plot(x_val, y_h, label='y(x), N = '+str(i))
+
+y_true = lambda x: -x**4 + x**3
+plt.plot(x_val, y_true(x_val), label='Exact Solution', color = "black")
+
+plt.title(' monomial basis for y'' = f with N')
+plt.xlabel('x')
+plt.ylabel('y(x)')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
