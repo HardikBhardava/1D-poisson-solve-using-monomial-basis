@@ -1,0 +1,46 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import quad
+
+
+def f(x):
+    return 12*x**2 - 6*x
+
+def test_fn(m):
+    basis = np.zeros(m-1)
+    for i in range(m-1):
+        basis[i] = lambda x: (x**i)* (1 - x) 
+    return basis
+
+def basis_derivatives(m, x):
+    basis_deriv = np.zeros(m+1)
+    for i in range(m+1):
+        basis_deriv[i] = lambda x : (i+1)*(x**i)
+
+    return basis_deriv
+
+def test_derivative(m):
+    test_deriv = np.zeros(m-1)
+    for i in range(m-1):
+        test_deriv[i] = lambda x: (i+1)*(x**1) - (i+2)*(x**(i+1))
+
+    return test_deriv
+
+#test_deriv = test_derivative(m)
+
+def lhs(m):
+    stiff_matrix_A = np.zeros((m-1, m+1))
+    #test_deriv = np.zeros(m-1)
+    #basis_deriv = np.zeros(m+1)
+    for i in range(1, m):
+        
+        for j in range(m+1):    
+            #basis_deriv = lambda x : (i+1)*(x**i)
+            #test_deriv = lambda x: (j+1)*(x**1) - (j+2)*(x**(j+1))
+
+            #lhs_integration = lambda x : basis_deriv*test_deriv
+            lhs_integration = lambda x : j*x**(j-1)*(i*x**(i-1)- (i+1)*(x**i))
+            stiff_matrix_A[i-1, j], _ = quad(lhs_integration, 0, 1)
+
+    return stiff_matrix_A
+
